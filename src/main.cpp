@@ -13,12 +13,28 @@ void signalHandler(int signal) {
     }
 }
 
+void is_valid_port(char *str)
+{
+	for(int i = 0; str[i]; i++)
+	{
+		if(isspace(str[i]))
+			i++;
+		if(str[i] == '+')
+			i++;
+		if(!isdigit(str[i]) )
+		{
+			std::cout << "Error: Port invalid!\n";
+			exit(1);
+		}
+	}
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
         return 1;
     }
-    
+    is_valid_port(argv[1]);
     int port = std::atoi(argv[1]);
     std::string password = argv[2];
     
@@ -29,7 +45,7 @@ int main(int argc, char* argv[]) {
     
     // Set up signal handling
     signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
+    // signal(SIGTERM, signalHandler);
     
     try {
         g_server = new Server(port, password);

@@ -9,6 +9,8 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 
+class Command;
+
 class Server {
 private:
     int port;
@@ -18,17 +20,31 @@ private:
     std::map<int, Client*> clients;
     std::map<std::string, Channel*> channels;
     
-    // Private methods
+    // Socket and connection methods
     void setupSocket();
     void acceptClient();
     void handleClientData(int clientFd);
     void removeClient(int clientFd);
+    
+    // Command processing
     void executeCommand(Client* client, const std::string& command);
+    void checkAuthentication(Client* client);
+    
+    // Command handlers
+    void handleJoin(Client* client, const Command& command);
+    void handlePrivmsg(Client* client, const Command& command);
+    void handleKick(Client* client, const Command& command);
+    void handlePart(Client* client, const Command& command);
+    void handleTopic(Client* client, const Command& command);
+    void handleMode(Client* client, const Command& command);
+    void handleInvite(Client* client, const Command& command);
+    void handleQuit(Client* client, const Command& command);
     
 public:
     Server(int port, const std::string& password);
     ~Server();
     
+    // Main server operations
     void start();
     void broadcast(const std::string& message, int excludeFd = -1);
     void sendToClient(int clientFd, const std::string& message);
